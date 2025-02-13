@@ -14,7 +14,7 @@ vector<int> xBest;
 vector<int> d;
 vector<vector<int>> dk(pop+1);
 vector<vector<int>> lk(pop+1);
-vector<int> pos(2);
+vector<int> pos(Ne);
 random_device rd;   
 mt19937 gen(rd());
 
@@ -294,8 +294,9 @@ void EPD(){
     lk=sortedlk;
     
     // find EL
-    vector<vector<int>> EB={x[1],x[2]};
-    vector<int> pos(2);
+    vector<vector<int>> EB;
+    for (int i=1;i<=Ne;i++) EB.push_back(x[i]);
+
     int cnt=0;
 
     for (vector<int> xb:EB){
@@ -370,6 +371,7 @@ void EP_WOCD(){
 
     for (int t=1;t<=T;t++){
         for (int p=1;p<=pop;p++){
+            bool check=0;
             if (p>2&& p!=pos[0] && p!=pos[1]) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],0.3);
             boudaryNodeAdjustment(x[p],dk[p],lk[p],1);
