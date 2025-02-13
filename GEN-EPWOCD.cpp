@@ -309,8 +309,9 @@ void EPD(){
             }
 
             if (suit==1){
-                pos[0]-=(i<pos[0]);
-                pos[1]-=(i<pos[1]);
+                for (int j=0;j<Ne;j++)
+                    pos[j]-=(i<pos[j]);
+
                 x.erase(x.begin() + i);
                 dk.erase(dk.begin() + i);
                 lk.erase(lk.begin() + i);   
@@ -329,8 +330,8 @@ void EPD(){
             double C=1.0-exp(-double(i)/N_nor);
             double rand=dis(gen);
             if (rand<=C){
-                pos[0]-=(i<pos[0]);
-                pos[1]-=(i<pos[1]);
+                for (int j=0;j<Ne;j++)
+                    pos[j]-=(i<pos[j]);
 
                 x.erase(x.begin() + i);
                 dk.erase(dk.begin() + i);
@@ -371,8 +372,11 @@ void EP_WOCD(){
 
     for (int t=1;t<=T;t++){
         for (int p=1;p<=pop;p++){
-            bool check=0;
-            if (p>2&& p!=pos[0] && p!=pos[1]) updateLocation(x[p],t,dk[p],lk[p]);
+            bool check=(p>Ne);
+            for (int i=0;i<Ne;i++)
+                if (p==pos[i]) {check=0;break;}
+
+            if (check) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],0.3);
             boudaryNodeAdjustment(x[p],dk[p],lk[p],1);
         }
