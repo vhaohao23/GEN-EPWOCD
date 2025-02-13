@@ -14,7 +14,7 @@ vector<int> xBest;
 vector<int> d;
 vector<vector<int>> dk(pop+1);
 vector<vector<int>> lk(pop+1);
-
+vector<int> pos(2);
 random_device rd;   
 mt19937 gen(rd());
 
@@ -370,10 +370,8 @@ void EP_WOCD(){
 
     for (int t=1;t<=T;t++){
         for (int p=1;p<=pop;p++){
-            if (p>2) updateLocation(x[p],t,dk[p],lk[p]);
+            if (p>2&& p!=pos[0] && p!=pos[1]) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],0.3);
-            // if (p<=2) boudaryNodeAdjustment(x[p],dk[p],lk[p],1);
-            // else boudaryNodeAdjustment(x[p],dk[p],lk[p],0.1);
             boudaryNodeAdjustment(x[p],dk[p],lk[p],1);
         }
         for (int i=1;i<=pop;i++){
@@ -381,8 +379,6 @@ void EP_WOCD(){
                 ans=modularity(dk[i],lk[i]);
                 xBest=x[i];
             }
-
-            
         }
         cout<<ans<<"\n";
         EPD();        
