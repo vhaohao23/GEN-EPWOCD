@@ -17,7 +17,10 @@ vector<vector<int>> lk(pop+1);
 vector<int> pos(Ne);
 random_device rd;   
 mt19937 gen(rd());
-
+double rateInc=0.1;
+double rateDec=0.3;
+int maLong=0;
+int macom=0;
 double calI(vector<int> l1,vector<int> l2){
     int s1 = *max_element(l1.begin(), l1.end());
     int s2 = *max_element(l2.begin(), l2.end());
@@ -35,7 +38,7 @@ double calI(vector<int> l1,vector<int> l2){
             
             double Cij=0;
             for (int v:c1[i]) if (l2[v]==j) Cij++;
-            if (Cij)
+            if (Cij>0)
                 I+=Cij*log( Cij*double(N)/double(c1[i].size()*c2[j].size()) );
         }
     }
@@ -49,7 +52,8 @@ double calH(vector<int> l){
         c[l[i]].push_back(i);
     double H=0;
     for (int i=1;i<=s;i++){
-        H+=double(c[i].size()*log(double(c[i].size())/double(N)));
+        if (c[i].size())
+            H+=double(c[i].size()*log(double(c[i].size())/double(N)));
     }
     return H;
 }
@@ -227,7 +231,7 @@ void mutation(vector<int> &l,vector<int> &dk,vector<int> &lk,double u){
                 dk=dktmp;
                 lk=lktmp;
             }
-            
+            macom=max(macom,S);
         }
     }
 }
@@ -309,7 +313,7 @@ void EPD(){
             }
 
             if (suit==1){
-                for (int j=0;j<Ne;j++)
+                for (int j=0;j<cnt;j++)
                     pos[j]-=(i<pos[j]);
 
                 x.erase(x.begin() + i);
@@ -340,6 +344,8 @@ void EPD(){
                 --i;
             }
         }
+    if (Ne)
+        maLong=NMI(x[pos[Ne-1]],xBest);
 }
 
 void updateLocation(vector<int> &l,int t,vector<int> &dk,vector<int> &lk){
@@ -369,7 +375,8 @@ void EP_WOCD(){
             ans=modularity(dk[i],lk[i]);
             xBest=x[i];
         }
-
+    
+    uniform_real_distribution dis(0.0,1.0);
     for (int t=1;t<=T;t++){
         for (int p=1;p<=pop;p++){
             bool check=(p>Ne);
@@ -380,19 +387,39 @@ void EP_WOCD(){
             mutation(x[p],dk[p],lk[p],0.3);
             boudaryNodeAdjustment(x[p],dk[p],lk[p],1);
         }
+
+        bool isStable=1;
         for (int i=1;i<=pop;i++){
             if (modularity(dk[i],lk[i])>ans){
                 ans=modularity(dk[i],lk[i]);
                 xBest=x[i];
+
+                isStable=0;
             }
         }
-        cout<<ans<<"\n";
+
+        // if (!isStable){
+        //     if (dis(gen)<rateInc){
+        //         --Ne;
+        //     }
+        // }
+        // else {
+        //     if (dis(gen)<rateDec){
+        //         ++Ne;
+        //     }
+        // }
+
+        // Ne=min(Ne,pop/2);
+
+        cout<<ans<<" "<<Ne<<" "<<maLong<<" "<<macom<<"\n";
         EPD();        
     }    
 
     cout<<ans<<"\n";
     for (int i=1;i<=N;i++)
         cout<<xBest[i]<<" ";
+    cout<<"\n";
+    // cout<<pos[Ne-1]<<" "<<pos[Ne-2];
 }
 int main(){
     clock_t tStart = clock();
