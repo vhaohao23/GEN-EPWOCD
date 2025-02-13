@@ -233,14 +233,17 @@ void mutation(vector<int> &l,vector<int> &dk,vector<int> &lk,double u){
 }
 
 
-void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk){
+void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk,double rate){
     vector<int> tmpl;
     vector<int> dktmp;
     vector<int> lktmp;
     int s=*max_element(l.begin(),l.end());
     bool dd[s+1]={};
     
+    uniform_real_distribution dis(0.0,1.0);
     for (int i=1;i<=N;i++){
+            if (dis(gen)>rate) continue;
+
             dd[l[i]]=true;
             for (int neighbor:e[i])
                 if (l[i]!=l[neighbor] && !dd[l[neighbor]]){
@@ -305,6 +308,8 @@ void EPD(){
             }
 
             if (suit==1){
+                pos[0]-=(i<pos[0]);
+                pos[1]-=(i<pos[1]);
                 x.erase(x.begin() + i);
                 dk.erase(dk.begin() + i);
                 lk.erase(lk.begin() + i);   
@@ -323,6 +328,9 @@ void EPD(){
             double C=1.0-exp(-double(i)/N_nor);
             double rand=dis(gen);
             if (rand<=C){
+                pos[0]-=(i<pos[0]);
+                pos[1]-=(i<pos[1]);
+
                 x.erase(x.begin() + i);
                 dk.erase(dk.begin() + i);
                 lk.erase(lk.begin() + i);   
@@ -364,7 +372,9 @@ void EP_WOCD(){
         for (int p=1;p<=pop;p++){
             if (p>2) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],0.3);
-            boudaryNodeAdjustment(x[p],dk[p],lk[p]);
+            // if (p<=2) boudaryNodeAdjustment(x[p],dk[p],lk[p],1);
+            // else boudaryNodeAdjustment(x[p],dk[p],lk[p],0.1);
+            boudaryNodeAdjustment(x[p],dk[p],lk[p],1);
         }
         for (int i=1;i<=pop;i++){
             if (modularity(dk[i],lk[i])>ans){
