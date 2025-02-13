@@ -379,13 +379,14 @@ void EP_WOCD(){
     uniform_real_distribution dis(0.0,1.0);
     for (int t=1;t<=T;t++){
         for (int p=1;p<=pop;p++){
+            double rateLS=1,rateMu=0.3;
             bool check=(p>Ne);
             for (int i=0;i<Ne;i++)
-                if (p==pos[i]) {check=0;break;}
+                if (p==pos[i]) {check=0;rateLS=rateMu=0.1;break;}
 
             if (check) updateLocation(x[p],t,dk[p],lk[p]);
-            mutation(x[p],dk[p],lk[p],0.3);
-            boudaryNodeAdjustment(x[p],dk[p],lk[p],1);
+            mutation(x[p],dk[p],lk[p],rateMu);
+            boudaryNodeAdjustment(x[p],dk[p],lk[p],rateLS);
         }
 
         bool isStable=1;
@@ -419,7 +420,7 @@ void EP_WOCD(){
     for (int i=1;i<=N;i++)
         cout<<xBest[i]<<" ";
     cout<<"\n";
-    // cout<<pos[Ne-1]<<" "<<pos[Ne-2];
+    cout<<pos[Ne-1]<<" "<<pos[Ne-2];
 }
 int main(){
     clock_t tStart = clock();
@@ -435,7 +436,7 @@ int main(){
     for (int i=1;i<=NE;i++){
         int u,v;
         cin>>u>>v;
-        u++,v++;
+        // u++,v++;
         e[u].push_back(v);
         e[v].push_back(u);
         d[u]++,d[v]++;
