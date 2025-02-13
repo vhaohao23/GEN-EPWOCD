@@ -6,7 +6,7 @@ int N;
 int NE;
 const double p=1.0;
 const double lenP=5.0;
-
+int Ne=2;
 vector<vector<bool>> A;
 vector<vector<int>> x(pop+1);
 vector<vector<int>> e;
@@ -232,12 +232,6 @@ void mutation(vector<int> &l,vector<int> &dk,vector<int> &lk,double u){
     }
 }
 
-bool isBoundaryNode(vector<int> l,int u){
-    for (int v:e[u])
-        if (l[u]!=l[v])
-            return true;
-    return false;
-}
 
 void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk){
     vector<int> tmpl;
@@ -247,7 +241,6 @@ void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk){
     bool dd[s+1]={};
     
     for (int i=1;i<=N;i++){
-        if (isBoundaryNode(l,i)){
             dd[l[i]]=true;
             for (int neighbor:e[i])
                 if (l[i]!=l[neighbor] && !dd[l[neighbor]]){
@@ -270,7 +263,7 @@ void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk){
             for (int i=1;i<=s;i++)
                 dd[i]=false;
         }
-    }
+    
 }
 void EPD(){
     if (x.size()<10) return;
@@ -296,29 +289,37 @@ void EPD(){
     x=sortedX;
     dk=sorteddk;
     lk=sortedlk;
+    
+    // find EL
+    vector<vector<int>> EB={x[1],x[2]};
+    vector<int> pos(2);
+    int cnt=0;
 
-    double N_nor=pop-(pop/2+1)+1;       
-    uniform_real_distribution<double> dis(0,1);
-    double miSuit=1,posSuit,suit;
-    for (int i=1;i<=pop;i++){
-        suit=NMI(x[i],xBest);
-        if (suit<miSuit){
-            miSuit=suit;
-            posSuit=i;
+    for (vector<int> xb:EB){
+        double suit,miSuit=1;
+        for (int i=3;i<=pop;i++){
+            suit=NMI(x[i],xb);
+            if (suit<miSuit){
+                miSuit=suit;
+                pos[cnt]=i;
+            }
+
+            if (suit==1){
+                x.erase(x.begin() + i);
+                dk.erase(dk.begin() + i);
+                lk.erase(lk.begin() + i);   
+                --pop;
+                --i;
+            }
         }
-
-        if (suit==1){
-            x.erase(x.begin() + i);
-            dk.erase(dk.begin() + i);
-            lk.erase(lk.begin() + i);   
-            --pop;
-            --i;
-        }
-
+        ++cnt;
     }
 
-    for (int i=1;i<=pop;i++){
-        if (posSuit!=i){
+    //real EPD
+    double N_nor=pop-(pop/2+1)+1;
+    uniform_real_distribution<double> dis(0,1);
+    for (int i=pop/2+1;i<=pop;i++)
+        if (i!=pos[0]&&i!=pos[1]){
             double C=1.0-exp(-double(i)/N_nor);
             double rand=dis(gen);
             if (rand<=C){
@@ -329,8 +330,6 @@ void EPD(){
                 --i;
             }
         }
-    }
-    
 }
 
 void updateLocation(vector<int> &l,int t,vector<int> &dk,vector<int> &lk){
@@ -363,10 +362,9 @@ void EP_WOCD(){
 
     for (int t=1;t<=T;t++){
         for (int p=1;p<=pop;p++){
-            updateLocation(x[p],t,dk[p],lk[p]);
+            if (p>2) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],0.3);
             boudaryNodeAdjustment(x[p],dk[p],lk[p]);
-            
         }
         for (int i=1;i<=pop;i++){
             if (modularity(dk[i],lk[i])>ans){
@@ -398,6 +396,7 @@ int main(){
     for (int i=1;i<=NE;i++){
         int u,v;
         cin>>u>>v;
+        u++,v++;
         e[u].push_back(v);
         e[v].push_back(u);
         d[u]++,d[v]++;
