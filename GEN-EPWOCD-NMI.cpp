@@ -7,6 +7,7 @@ int NE;
 const double p=1.0;
 const double lenP=5.0;
 int Ne=2;
+vector<int> trueLabel={0,8,1,3,4,8,4,3,9,9,8,4,11,7,3,7,3,8,10,7,2,10,9,9,8,11,1,7,10,12,2,2,7,3,1,7,2,6,1,7,3,4,8,6,7,5,1,12,3,5,12,11,9,4,12,7,2,10,5,12,11,3,7,10,11,3,10,5,12,9,11,10,7,4,12,4,5,10,9,9,2,6,4,6,12,4,7,5,10,12,1,6,5,5,8,2,10,10,11,4,7,3,2,4,1,8,1,3,4,9,1,5,9,5,10,12};
 vector<vector<bool>> A;
 vector<vector<int>> x(pop+1);
 vector<vector<int>> e;
@@ -62,15 +63,6 @@ double NMI(vector<int> l1,vector<int> l2){
     return -2.0*calI(l1,l2)/(calH(l1)+calH(l2));
 }
 
-double modularity(vector<int> dk,vector<int> lk){
-    double Q=0;
-
-    for (int i=1;i<=N;i++){
-        Q+=double(lk[i])/double(NE)-pow(double(dk[i])/double(2*NE),2.0);
-    }
-
-    return Q;
-}
 
 void transfer(vector<int> &dk,vector<int> &lk,vector<int> l,int i,int l1,int l2){
     dk[l1]-=d[i];
@@ -146,8 +138,8 @@ void movingToPrey(vector<int> &l,vector<int> &dk,vector<int> &lk,double k,vector
     shuffle(pos.begin(),pos.end(),gen);
 
     for (int i=0;i<=int(k)-1;i++){
-        transfer(dk,lk,l,pos[i],l[pos[i]],xBest[pos[i]]);
-        l[pos[i]]=xBest[pos[i]];
+        transfer(dk,lk,l,pos[i],l[pos[i]],xHybrid[pos[i]]);
+        l[pos[i]]=xHybrid[pos[i]];
     }
 }
 
@@ -189,8 +181,8 @@ void encirlingThePrey(vector<int>&l,vector<int> &dk,vector<int> &lk,double r,vec
     shuffle(pos.begin(),pos.end(),gen);
 
     for (int i=0;i<=int(k)-1;i++){
-        transfer(dk,lk,l,pos[i],l[pos[i]],xBest[pos[i]]);
-        l[pos[i]]=xBest[pos[i]];
+        transfer(dk,lk,l,pos[i],l[pos[i]],xHybrid[pos[i]]);
+        l[pos[i]]=xHybrid[pos[i]];
     }
 }
 
@@ -226,7 +218,7 @@ void mutation(vector<int> &l,vector<int> &dk,vector<int> &lk,double u){
                 }
             }
             
-            if (modularity(dk,lk)<modularity(dktmp,lktmp)){
+            if (NMI(l,trueLabel)<NMI(ltmp,trueLabel)){
                 --S;
                 l=ltmp;
                 dk=dktmp;
@@ -261,7 +253,7 @@ void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk,double
                     transfer(dk,lk,l,i,l[i],l[neighbor]);
                     l[i]=l[neighbor];
 
-                    if (modularity(dk,lk)<modularity(dktmp,lktmp)){
+                    if (NMI(l,trueLabel)<NMI(tmpl,trueLabel)){
                         dk=dktmp;
                         lk=lktmp;
                         l=tmpl;
@@ -278,7 +270,7 @@ void EPD(){
 
     vector<pair<double, int>> modularityValues;
     for (int i = 1; i <= pop; i++) {
-        double modValue = modularity(dk[i],lk[i]);  
+        double modValue = NMI(x[i],trueLabel);  
         modularityValues.push_back({modValue, i});
     }
 
@@ -314,7 +306,7 @@ void EPD(){
             }
 
             if (suit==1){
-                for (int j=0;j<cnt;j++)
+                for (int j=0;j<=cnt;j++)
                     pos[j]-=(i<pos[j]);
 
                 x.erase(x.begin() + i);
@@ -379,18 +371,19 @@ void EP_WOCD(){
     initialization();
     double ans=0;
     for (int i=1;i<=pop;i++)
-        if (modularity(dk[i],lk[i])>ans){
-            ans=modularity(dk[i],lk[i]);
+        if (NMI(x[i],trueLabel)>ans){
+            ans=NMI(x[i],trueLabel);
             xBest=x[i];
         }
-    
+    x[pos[0]]=x[0];x[pos[1]]=x[1];
+
     uniform_real_distribution dis(0.0,1.0);
     for (int t=1;t<=T;t++){
         for (int p=1;p<=pop;p++){
             double rateLS=1,rateMu=0.3;
             bool check=(p>Ne);
             for (int i=0;i<Ne;i++)
-                if (p==pos[i]) {check=0;rateLS=rateMu=0.1;break;}
+                if (p==pos[i]) {check=0;rateLS=0.06;rateMu=0.06;break;}
 
             if (check) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],rateMu);
@@ -399,29 +392,17 @@ void EP_WOCD(){
 
         bool isStable=1;
         for (int i=1;i<=pop;i++){
-            if (modularity(dk[i],lk[i])>ans){
-                ans=modularity(dk[i],lk[i]);
+            if (NMI(x[i],trueLabel)>ans){
+                ans=NMI(x[i],trueLabel);
                 xBest=x[i];
 
                 isStable=0;
             }
         }
 
-        // if (!isStable){
-        //     if (dis(gen)<rateInc){
-        //         --Ne;
-        //     }
-        // }
-        // else {
-        //     if (dis(gen)<rateDec){
-        //         ++Ne;
-        //     }
-        // }
-
-        // Ne=min(Ne,pop/2);
-
-        cout<<ans<<" "<<Ne<<" "<<maLong<<" "<<macom<<"\n";
-        EPD();        
+        
+        EPD();       
+        cout<<ans<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[Ne-1]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<" "<<NMI(xBest,x[4])<<"\n"; 
     }    
 
     cout<<ans<<"\n";
