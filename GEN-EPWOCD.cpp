@@ -19,7 +19,7 @@ random_device rd;
 mt19937 gen(rd());
 double rateInc=0.1;
 double rateDec=0.3;
-double rateMimicElist=0.7;
+double rateMimicElist=0.8;
 int maLong=0;
 int macom=0;
 double calI(vector<int> l1,vector<int> l2){
