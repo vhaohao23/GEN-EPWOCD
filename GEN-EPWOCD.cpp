@@ -314,7 +314,7 @@ void EPD(){
             }
 
             if (suit==1){
-                for (int j=0;j<cnt;j++)
+                for (int j=0;j<=cnt;j++)
                     pos[j]-=(i<pos[j]);
 
                 x.erase(x.begin() + i);
@@ -358,8 +358,10 @@ void updateLocation(vector<int> &l,int t,vector<int> &dk,vector<int> &lk){
         if (beta<0.5){
             if (dis(gen)<rateMimicElist)
                 movingToPrey(l,dk,lk,k,xBest);
-            else movingToPrey(l,dk,lk,k,x[pos[0]]);
-
+            else {
+                if (dis(gen)<0.5) movingToPrey(l,dk,lk,k,x[pos[0]]);
+                else movingToPrey(l,dk,lk,k,x[pos[1]]);
+            }
         }
         else
             randomWalk(l,dk,lk,k);
@@ -371,7 +373,10 @@ void updateLocation(vector<int> &l,int t,vector<int> &dk,vector<int> &lk){
 
         if (dis(gen)<rateMimicElist)
             encirlingThePrey(l,dk,lk,r,xBest);
-        else  encirlingThePrey(l,dk,lk,r,x[pos[0]]);
+        else  {
+            if (dis(gen)<0.5) encirlingThePrey(l,dk,lk,r,x[pos[0]]);
+            else encirlingThePrey(l,dk,lk,r,x[pos[1]]);
+        }
     }
 }
 
@@ -386,6 +391,7 @@ void EP_WOCD(){
     
     uniform_real_distribution dis(0.0,1.0);
     for (int t=1;t<=T;t++){
+        double ib;
         for (int p=1;p<=pop;p++){
             double rateLS=1,rateMu=0.3;
             bool check=(p>Ne);
@@ -405,6 +411,10 @@ void EP_WOCD(){
 
                 isStable=0;
             }
+
+            if (modularity(dk[i],lk[i])>ib){
+                ib=modularity(dk[i],lk[i]);
+            }
         }
 
         // if (!isStable){
@@ -420,7 +430,7 @@ void EP_WOCD(){
 
         // Ne=min(Ne,pop/2);
 
-        cout<<ans<<" "<<Ne<<" "<<maLong<<" "<<macom<<"\n";
+        cout<<ans<<" "<<ib<<" "<<Ne<<" "<<maLong<<" "<<macom<<"\n";
         EPD();        
     }    
 
@@ -450,7 +460,7 @@ int main(){
         d[u]++,d[v]++;
         A[u][v]=A[v][u]=true;
     }
-
+    
     EP_WOCD();
 
     printf("\nTime taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);

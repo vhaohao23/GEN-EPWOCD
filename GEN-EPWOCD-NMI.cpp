@@ -20,7 +20,7 @@ random_device rd;
 mt19937 gen(rd());
 double rateInc=0.1;
 double rateDec=0.3;
-double rateMimicElist=0.7;
+double rateMimicElist=0.8;
 int maLong=0;
 int macom=0;
 double calI(vector<int> l1,vector<int> l2){
@@ -350,7 +350,10 @@ void updateLocation(vector<int> &l,int t,vector<int> &dk,vector<int> &lk){
         if (beta<0.5){
             if (dis(gen)<rateMimicElist)
                 movingToPrey(l,dk,lk,k,xBest);
-            else movingToPrey(l,dk,lk,k,x[pos[0]]);
+            else {
+                if (dis(gen)<0.5) movingToPrey(l,dk,lk,k,x[pos[0]]);
+                else movingToPrey(l,dk,lk,k,x[pos[1]]);
+            }
 
         }
         else
@@ -363,7 +366,10 @@ void updateLocation(vector<int> &l,int t,vector<int> &dk,vector<int> &lk){
 
         if (dis(gen)<rateMimicElist)
             encirlingThePrey(l,dk,lk,r,xBest);
-        else  encirlingThePrey(l,dk,lk,r,x[pos[0]]);
+        else {
+            if (dis(gen)<0.5) encirlingThePrey(l,dk,lk,r,x[pos[0]]);
+            else encirlingThePrey(l,dk,lk,r,x[pos[1]]);
+        }
     }
 }
 
@@ -379,11 +385,12 @@ void EP_WOCD(){
 
     uniform_real_distribution dis(0.0,1.0);
     for (int t=1;t<=T;t++){
+        double ib=0;
         for (int p=1;p<=pop;p++){
             double rateLS=1,rateMu=0.3;
             bool check=(p>Ne);
             for (int i=0;i<Ne;i++)
-                if (p==pos[i]) {check=0;rateLS=0.06;rateMu=0.06;break;}
+                if (p==pos[i]) {check=0;rateLS=0.08;rateMu=0.08;break;}
 
             if (check) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],rateMu);
@@ -398,11 +405,13 @@ void EP_WOCD(){
 
                 isStable=0;
             }
+            if (NMI(x[i],trueLabel)>ib)
+                ib=NMI(x[i],trueLabel);
         }
 
         
         EPD();       
-        cout<<ans<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[Ne-1]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<" "<<NMI(xBest,x[4])<<"\n"; 
+        cout<<ans<<" "<<ib<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[0]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<" "<<NMI(xBest,x[4])<<"\n"; 
     }    
 
     cout<<ans<<"\n";
@@ -431,7 +440,7 @@ int main(){
         d[u]++,d[v]++;
         A[u][v]=A[v][u]=true;
     }
-
+    cout<<trueLabel.size()<<"\n";
     EP_WOCD();
 
     printf("\nTime taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
