@@ -18,8 +18,8 @@ vector<vector<int>> lk(pop+1);
 vector<int> pos(Ne);
 random_device rd;   
 mt19937 gen(rd());
-double rateInc=0.1;
-double rateDec=0.3;
+// double rateInc=0.1;
+// double rateDec=0.3;
 double rateMimicElist=0.8;
 int maLong=0;
 int macom=0;
@@ -372,7 +372,54 @@ void updateLocation(vector<int> &l,int t,vector<int> &dk,vector<int> &lk){
         }
     }
 }
+void consolidation(vector<int> &l,int l1,int l2){
+    for (int i=1;i<=N;i++)
+        if (l[i]==l1)
+            l[i]=l2;
+}
+void SecondaryCommunityConsolidation(){
+    map<int,bool> mp;
+    map<int,int> cntNode;
+    int numC=0;
+    for (int i=1;i<=N;i++){
+        if (mp.find(xBest[i])==mp.end()){
+            ++numC;
+            mp[xBest[i]]=1;
+        }
+        cntNode[xBest[i]]++;
+    }
 
+    cout<<numC<<"\n";
+    vector<pair<int,int>> decComminities;
+    for (auto [x,_]:mp)
+        decComminities.push_back({x,cntNode[x]});
+    
+        sort(decComminities.begin(),decComminities.end(),[](pair<int,int> a,pair<int,int> b){
+        return a.second>b.second;
+    });
+
+    int i=numC-1;
+    vector<int> xtmp;
+    while (i>0){
+        int j=0;
+        bool check=0;
+        while (i>j){
+            xtmp=xBest;
+            consolidation(xBest,decComminities[i].first,decComminities[j].first);
+
+            if (NMI(xBest,trueLabel)>NMI(xtmp,trueLabel)){
+                --i;
+                check=1;
+                break;
+            }
+            else xBest=xtmp;
+            ++j;
+        }
+
+        if (!check) --i;
+    }
+    
+}
 void EP_WOCD(){
     initialization();
     double ans=0;
@@ -390,7 +437,7 @@ void EP_WOCD(){
             double rateLS=1,rateMu=0.3;
             bool check=(p>Ne);
             for (int i=0;i<Ne;i++)
-                if (p==pos[i]) {check=0;rateLS=0.08;rateMu=0.08;break;}
+                if (p==pos[i]) {check=0;rateLS=0.08;rateMu=0.15;break;}
 
             if (check) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],rateMu);
@@ -414,7 +461,8 @@ void EP_WOCD(){
         cout<<ans<<" "<<ib<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[0]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<"\n"; 
         // cout<<ans<<"\n";
     }    
-
+    SecondaryCommunityConsolidation();
+    ans=NMI(xBest,trueLabel);
     cout<<ans<<"\n";
     for (int i=1;i<=N;i++)
         cout<<xBest[i]<<" ";
@@ -425,7 +473,7 @@ int main(){
     clock_t tStart = clock();
 
     freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/network.dat","r",stdin);
-
+    // freopen("input.txt","r",stdin);
     cin>>N;
     cin>>NE;
 
