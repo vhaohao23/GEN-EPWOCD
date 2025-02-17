@@ -7,7 +7,7 @@ int NE;
 const double p=1.0;
 const double lenP=5.0;
 int Ne=2;
-vector<int> trueLabel={0,8,1,3,4,8,4,3,9,9,8,4,11,7,3,7,3,8,10,7,2,10,9,9,8,11,1,7,10,12,2,2,7,3,1,7,2,6,1,7,3,4,8,6,7,5,1,12,3,5,12,11,9,4,12,7,2,10,5,12,11,3,7,10,11,3,10,5,12,9,11,10,7,4,12,4,5,10,9,9,2,6,4,6,12,4,7,5,10,12,1,6,5,5,8,2,10,10,11,4,7,3,2,4,1,8,1,3,4,9,1,5,9,5,10,12};
+vector<int> trueLabel;
 vector<vector<bool>> A;
 vector<vector<int>> x(pop+1);
 vector<vector<int>> e;
@@ -138,7 +138,7 @@ void movingToPrey(vector<int> &l,vector<int> &dk,vector<int> &lk,double k,vector
     shuffle(pos.begin(),pos.end(),gen);
 
     for (int i=0;i<=int(k)-1;i++){
-        transfer(dk,lk,l,pos[i],l[pos[i]],xHybrid[pos[i]]);
+        // transfer(dk,lk,l,pos[i],l[pos[i]],xHybrid[pos[i]]);
         l[pos[i]]=xHybrid[pos[i]];
     }
 }
@@ -165,7 +165,7 @@ void randomWalk(vector<int> &l,vector<int> &dk,vector<int> &lk,double k){
 
         while (kCommma--){
             --k;
-            transfer(dk,lk,l,randNode[k],l[randNode[k]],P[i][randNode[k]]);
+            // transfer(dk,lk,l,randNode[k],l[randNode[k]],P[i][randNode[k]]);
             l[randNode[k]]=P[i][randNode[k]];
         }
     }
@@ -181,7 +181,7 @@ void encirlingThePrey(vector<int>&l,vector<int> &dk,vector<int> &lk,double r,vec
     shuffle(pos.begin(),pos.end(),gen);
 
     for (int i=0;i<=int(k)-1;i++){
-        transfer(dk,lk,l,pos[i],l[pos[i]],xHybrid[pos[i]]);
+        // transfer(dk,lk,l,pos[i],l[pos[i]],xHybrid[pos[i]]);
         l[pos[i]]=xHybrid[pos[i]];
     }
 }
@@ -203,17 +203,17 @@ void mutation(vector<int> &l,vector<int> &dk,vector<int> &lk,double u){
             ++S;
             double y=dis(gen);
             if (y<0.5){
-                transfer(dk,lk,l,i,l[i],S);                
+                // transfer(dk,lk,l,i,l[i],S);                
                 l[i]=S;
                 
             }
             else{
-                transfer(dk,lk,l,i,l[i],S);
+                // transfer(dk,lk,l,i,l[i],S);
                 l[i]=S;
                 
 
                 for (int neigbor:e[i]){
-                    transfer(dk,lk,l,neigbor,l[neigbor],S);
+                    // transfer(dk,lk,l,neigbor,l[neigbor],S);
                     l[neigbor]=S;
                 }
             }
@@ -250,7 +250,7 @@ void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk,double
                     dktmp=dk;
                     lktmp=lk;
 
-                    transfer(dk,lk,l,i,l[i],l[neighbor]);
+                    // transfer(dk,lk,l,i,l[i],l[neighbor]);
                     l[i]=l[neighbor];
 
                     if (NMI(l,trueLabel)<NMI(tmpl,trueLabel)){
@@ -411,7 +411,8 @@ void EP_WOCD(){
 
         
         EPD();       
-        cout<<ans<<" "<<ib<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[0]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<" "<<NMI(xBest,x[4])<<"\n"; 
+        cout<<ans<<" "<<ib<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[0]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<"\n"; 
+        // cout<<ans<<"\n";
     }    
 
     cout<<ans<<"\n";
@@ -423,7 +424,7 @@ void EP_WOCD(){
 int main(){
     clock_t tStart = clock();
 
-    freopen("input.txt","r",stdin);
+    freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/network.dat","r",stdin);
 
     cin>>N;
     cin>>NE;
@@ -440,6 +441,15 @@ int main(){
         d[u]++,d[v]++;
         A[u][v]=A[v][u]=true;
     }
+
+    freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/community.dat","r",stdin);
+    trueLabel.push_back(0);
+    for (int i=1;i<=N;i++){
+        int node,label;
+        cin>>node>>label;
+        trueLabel.push_back(label);
+    }
+
     cout<<trueLabel.size()<<"\n";
     EP_WOCD();
 
