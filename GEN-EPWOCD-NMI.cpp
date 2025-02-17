@@ -377,19 +377,19 @@ void consolidation(vector<int> &l,int l1,int l2){
         if (l[i]==l1)
             l[i]=l2;
 }
-void SecondaryCommunityConsolidation(){
+void SecondaryCommunityConsolidation(vector<int>&l){
     map<int,bool> mp;
     map<int,int> cntNode;
     int numC=0;
     for (int i=1;i<=N;i++){
-        if (mp.find(xBest[i])==mp.end()){
+        if (mp.find(l[i])==mp.end()){
             ++numC;
-            mp[xBest[i]]=1;
+            mp[l[i]]=1;
         }
-        cntNode[xBest[i]]++;
+        cntNode[l[i]]++;
     }
 
-    cout<<numC<<"\n";
+    
     vector<pair<int,int>> decComminities;
     for (auto [x,_]:mp)
         decComminities.push_back({x,cntNode[x]});
@@ -404,15 +404,15 @@ void SecondaryCommunityConsolidation(){
         int j=0;
         bool check=0;
         while (i>j){
-            xtmp=xBest;
-            consolidation(xBest,decComminities[i].first,decComminities[j].first);
+            xtmp=l;
+            consolidation(l,decComminities[i].first,decComminities[j].first);
 
-            if (NMI(xBest,trueLabel)>NMI(xtmp,trueLabel)){
+            if (NMI(l,trueLabel)>NMI(xtmp,trueLabel)){
                 --i;
                 check=1;
                 break;
             }
-            else xBest=xtmp;
+            else l=xtmp;
             ++j;
         }
 
@@ -461,8 +461,16 @@ void EP_WOCD(){
         cout<<ans<<" "<<ib<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[0]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<"\n"; 
         // cout<<ans<<"\n";
     }    
-    SecondaryCommunityConsolidation();
+    SecondaryCommunityConsolidation(xBest);
     ans=NMI(xBest,trueLabel);
+    cout<<ans<<"\n";
+    for (int i=1;i<=pop;i++){
+        SecondaryCommunityConsolidation(x[i]);
+        if (NMI(x[i],trueLabel)>ans){
+            ans=NMI(x[i],trueLabel);
+            xBest=x[i];
+        }
+    }
     cout<<ans<<"\n";
     for (int i=1;i<=N;i++)
         cout<<xBest[i]<<" ";
