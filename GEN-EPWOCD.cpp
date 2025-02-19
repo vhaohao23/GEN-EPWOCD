@@ -17,8 +17,6 @@ vector<vector<int>> lk(pop+1);
 vector<int> pos(Ne);
 random_device rd;   
 mt19937 gen(rd());
-double rateInc=0.1;
-double rateDec=0.3;
 double rateMimicElist=0.8;
 int maLong=0;
 int macom=0;
@@ -416,19 +414,6 @@ void EP_WOCD(){
                 ib=modularity(dk[i],lk[i]);
             }
         }
-
-        // if (!isStable){
-        //     if (dis(gen)<rateInc){
-        //         --Ne;
-        //     }
-        // }
-        // else {
-        //     if (dis(gen)<rateDec){
-        //         ++Ne;
-        //     }
-        // }
-
-        // Ne=min(Ne,pop/2);
 
         cout<<ans<<" "<<ib<<" "<<Ne<<" "<<maLong<<" "<<macom<<"\n";
         EPD();        

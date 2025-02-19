@@ -7,7 +7,7 @@ int NE;
 const double p=1.0;
 const double lenP=5.0;
 int Ne=2;
-vector<int> trueLabel;
+vector<int> trueLabel={0,1,2,2,2,1,2,1,1,2,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1,2,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,1,2,2,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,1,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1};
 vector<vector<bool>> A;
 vector<vector<int>> x(pop+1);
 vector<vector<int>> e;
@@ -18,8 +18,6 @@ vector<vector<int>> lk(pop+1);
 vector<int> pos(Ne);
 random_device rd;   
 mt19937 gen(rd());
-// double rateInc=0.1;
-// double rateDec=0.3;
 double rateMimicElist=0.8;
 int maLong=0;
 int macom=0;
@@ -439,9 +437,9 @@ void EP_WOCD(){
             for (int i=0;i<Ne;i++)
                 if (p==pos[i]) {check=0;rateLS=0.08;rateMu=0.15;break;}
 
-            if (check) updateLocation(x[p],t,dk[p],lk[p]);
+            if(check) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],rateMu);
-            if (!check) boudaryNodeAdjustment(x[p],dk[p],lk[p],rateLS);
+            boudaryNodeAdjustment(x[p],dk[p],lk[p],rateLS);
         }
 
         bool isStable=1;
@@ -480,11 +478,10 @@ void EP_WOCD(){
 int main(){
     clock_t tStart = clock();
 
-    freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/network.dat","r",stdin);
-    // freopen("input.txt","r",stdin);
+    // freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/network.dat","r",stdin);
+    freopen("input.txt","r",stdin);
     cin>>N;
     cin>>NE;
-
     d.resize(N+1);
     A.resize(N + 1, vector<bool>(N + 1, 0));
     e.resize(N+1);
@@ -498,13 +495,13 @@ int main(){
         A[u][v]=A[v][u]=true;
     }
 
-    freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/community.dat","r",stdin);
-    trueLabel.push_back(0);
-    for (int i=1;i<=N;i++){
-        int node,label;
-        cin>>node>>label;
-        trueLabel.push_back(label);
-    }
+    // freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/community.dat","r",stdin);
+    // trueLabel.push_back(0);
+    // for (int i=1;i<=N;i++){
+    //     int node,label;
+    //     cin>>node>>label;
+    //     trueLabel.push_back(label);
+    // }
 
     cout<<trueLabel.size()<<"\n";
     EP_WOCD();
