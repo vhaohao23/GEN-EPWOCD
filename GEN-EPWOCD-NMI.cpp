@@ -441,7 +441,7 @@ void EP_WOCD(){
 
             if (check) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],rateMu);
-            boudaryNodeAdjustment(x[p],dk[p],lk[p],rateLS);
+            if (!check) boudaryNodeAdjustment(x[p],dk[p],lk[p],rateLS);
         }
 
         bool isStable=1;
@@ -458,7 +458,7 @@ void EP_WOCD(){
 
         
         EPD();       
-        cout<<ans<<" "<<ib<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[0]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<"\n"; 
+        cout<<ans<<" "<<ib<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[0]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<" "<<pop<<"\n"; 
         // cout<<ans<<"\n";
     }    
     SecondaryCommunityConsolidation(xBest);
