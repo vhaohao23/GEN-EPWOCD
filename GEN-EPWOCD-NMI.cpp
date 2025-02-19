@@ -427,7 +427,7 @@ void EP_WOCD(){
             xBest=x[i];
         }
     x[pos[0]]=x[0];x[pos[1]]=x[1];
-
+    int cntStable=0;
     uniform_real_distribution dis(0.0,1.0);
     for (int t=1;t<=T;t++){
         double ib=0;
@@ -448,12 +448,14 @@ void EP_WOCD(){
                 ans=NMI(x[i],trueLabel);
                 xBest=x[i];
 
-                isStable=0;
+                isStable=0,cntStable=0;
             }
             if (NMI(x[i],trueLabel)>ib)
                 ib=NMI(x[i],trueLabel);
         }
 
+        cntStable+=isStable;
+        if (cntStable>15) break;
         
         EPD();       
         cout<<ans<<" "<<ib<<" "<<NMI(x[pos[0]],trueLabel)<<" "<<Ne<<" "<<pos[0]<<" "<<macom<<" "<<NMI(xBest,x[pos[1]])<<" "<<pop<<"\n"; 
@@ -472,13 +474,13 @@ void EP_WOCD(){
     cout<<ans<<"\n";
     for (int i=1;i<=N;i++)
         cout<<xBest[i]<<" ";
-    cout<<"\n";
-    cout<<pos[Ne-1]<<" "<<pos[Ne-2];
+    // cout<<"\n";
+    // cout<<pos[Ne-1]<<" "<<pos[Ne-2];
 }
 int main(){
     clock_t tStart = clock();
 
-    freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/network.dat","r",stdin);
+    freopen("/home/vhaohao/hao/nckh/LFRbenmark/LFR-0.05/network.dat","r",stdin);
     // freopen("input.txt","r",stdin);
     cin>>N;
     cin>>NE;
@@ -495,12 +497,12 @@ int main(){
         A[u][v]=A[v][u]=true;
     }
 
-    freopen("/home/vhaohao/hao/tmp/thanglm2006/GDPSO/Experimental data/synthetic networks/GN/GN-0.90/community.dat","r",stdin);
+    freopen("/home/vhaohao/hao/nckh/LFRbenmark/LFR-0.05/community.dat","r",stdin);
     trueLabel.push_back(0);
     for (int i=1;i<=N;i++){
         int node,label;
         cin>>node>>label;
-        trueLabel.push_back(label);
+        trueLabel.push_back(label+1);
     }
 
     cout<<trueLabel.size()<<"\n";
