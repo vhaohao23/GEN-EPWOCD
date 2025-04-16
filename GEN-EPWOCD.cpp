@@ -393,9 +393,7 @@ void EP_WOCD(){
         for (int p=1;p<=pop;p++){
             double rateLS=1,rateMu=0.3;
             bool check=(p>Ne);
-            for (int i=0;i<Ne;i++)
-                if (p==pos[i]) {check=0;rateLS=rateMu=0.1;break;}
-
+         
             if (check) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],rateMu);
             boudaryNodeAdjustment(x[p],dk[p],lk[p],rateLS);
@@ -415,15 +413,10 @@ void EP_WOCD(){
             }
         }
 
-        cout<<ans<<" "<<ib<<" "<<Ne<<" "<<maLong<<" "<<macom<<"\n";
         EPD();        
     }    
 
     cout<<ans<<"\n";
-    for (int i=1;i<=N;i++)
-        cout<<xBest[i]<<" ";
-    cout<<"\n";
-    cout<<pos[Ne-1]<<" "<<pos[Ne-2];
 }
 int main(){
     clock_t tStart = clock();
@@ -447,6 +440,6 @@ int main(){
     }
     
     EP_WOCD();
-
     printf("\nTime taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+
 }

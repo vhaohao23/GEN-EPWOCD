@@ -264,7 +264,7 @@ void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk,double
     
 }
 void EPD(){
-    if (x.size()<10) return;
+    if (x.size()<=10) return;
 
     vector<pair<double, int>> modularityValues;
     for (int i = 1; i <= pop; i++) {
@@ -434,9 +434,7 @@ void EP_WOCD(){
         for (int p=1;p<=pop;p++){
             double rateLS=1,rateMu=0.3;
             bool check=(p>Ne);
-            for (int i=0;i<Ne;i++)
-                if (p==pos[i]) {check=0;rateLS=0.08;rateMu=0.15;break;}
-
+            
             if(check) updateLocation(x[p],t,dk[p],lk[p]);
             mutation(x[p],dk[p],lk[p],rateMu);
             boudaryNodeAdjustment(x[p],dk[p],lk[p],rateLS);
