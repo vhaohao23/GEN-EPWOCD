@@ -272,7 +272,7 @@ void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk,double
     
 }
 void EPD(){
-    if (x.size()<10) return;
+    if (x.size()<=10) return;
 
     vector<pair<double, int>> modularityValues;
     for (int i = 1; i <= pop; i++) {
