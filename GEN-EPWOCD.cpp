@@ -272,7 +272,7 @@ void boudaryNodeAdjustment(vector<int> &l,vector<int> &dk,vector<int> &lk,double
     
 }
 void EPD(){
-    if (x.size()<10) return;
+    if (x.size()<=10) return;
 
     vector<pair<double, int>> modularityValues;
     for (int i = 1; i <= pop; i++) {
@@ -441,5 +441,9 @@ int main(){
     
     EP_WOCD();
     printf("\nTime taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+<<<<<<< HEAD
 
 }
+=======
+}
+>>>>>>> 41ec1dc49d6e3ddf8615ea54b141eb4f6e528721
