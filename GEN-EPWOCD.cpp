@@ -441,9 +441,4 @@ int main(){
     
     EP_WOCD();
     printf("\nTime taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
-<<<<<<< HEAD
-
 }
-=======
-}
->>>>>>> 41ec1dc49d6e3ddf8615ea54b141eb4f6e528721
