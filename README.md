@@ -5,7 +5,7 @@
   ![image](https://github.com/user-attachments/assets/47f3eac0-2c45-4279-9849-88f80f74c74f)
 
 
-*Example of community detection*
+    *Example of community detection*
 
 
 <h2>Run program</h2>
